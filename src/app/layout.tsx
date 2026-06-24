@@ -3,6 +3,7 @@ import './globals.css';
 import BottomNav from '@/components/layout/BottomNav';
 import AuthStoreSync from '@/components/common/AuthStoreSync';
 import ToastContainer from '@/components/common/ToastContainer';
+import KakaoInAppRedirect from '@/components/common/KakaoInAppRedirect';
 import { SITE_URL } from '@/lib/site';
 
 const TITLE = '쉼표 — 내 동네 힐링 장소';
@@ -45,6 +46,7 @@ export default function RootLayout({
     <html lang="ko">
       <body className="antialiased bg-[#FAF9F6]">
         <div className="relative min-h-dvh max-w-[430px] mx-auto bg-[#FAF9F6] shadow-[0_0_60px_rgba(0,0,0,0.06)]">
+          <KakaoInAppRedirect />
           <AuthStoreSync />
           <ToastContainer />
           <main className="pb-20">{children}</main>
