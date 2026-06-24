@@ -14,7 +14,7 @@ export default function CourseBanner() {
     <section className="px-4 py-6">
       <div className="mb-4">
         <h2 className="text-[18px] font-bold text-[#1A1A1A]">추천 산책 코스</h2>
-        <p className="text-sm text-[#9CA3AF] mt-0.5">오늘 이 코스 어때요?</p>
+        <p className="text-sm text-[#6B7280] mt-0.5">오늘 이 코스 어때요?</p>
       </div>
 
       <Link href={`/courses/${featured.id}`}>

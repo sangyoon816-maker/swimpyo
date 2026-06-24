@@ -7,7 +7,10 @@ import { useRouter } from 'next/navigation';
 import { EMOTIONS } from '@/data/emotions';
 import { getPlacesByEmotion } from '@/data/places';
 import { generateMoodAnalysis, getRecommendReasonBullets, type MoodAnalysis } from '@/lib/insight';
-import { useAppStore } from '@/store/useAppStore';
+import { insertEmotionLog } from '@/lib/emotionLogs';
+import { awardBadgesAndNotify } from '@/lib/badges';
+import { useAuth } from '@/hooks/useAuth';
+import { useRecentEmotionLogs } from '@/hooks/useEmotionLogs';
 import PlaceCard from '@/components/common/PlaceCard';
 import { Progress } from '@/components/ui/progress';
 import type { Emotion, Place } from '@/types';
@@ -15,35 +18,43 @@ import { EMOTION_MAP } from '@/data/emotions';
 
 export default function RecordClient() {
   const router = useRouter();
-  const { emotionRecords, addEmotionRecord } = useAppStore();
+  const { user } = useAuth();
+  const { logs: recentPreviewLogs } = useRecentEmotionLogs(user?.id, 3);
   const [step, setStep] = useState<'select' | 'write' | 'result'>('select');
   const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(null);
   const [note, setNote] = useState('');
   const [recommendedPlaces, setRecommendedPlaces] = useState<Place[]>([]);
   const [moodAnalysis, setMoodAnalysis] = useState<MoodAnalysis | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const handleEmotionSelect = (emotion: Emotion) => {
     setSelectedEmotion(emotion);
     setStep('write');
   };
 
-  const handleSubmit = () => {
+  const saveToCloud = async (emotion: Emotion) => {
+    if (!user) return;
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await insertEmotionLog(user.id, emotion, note);
+      awardBadgesAndNotify(user.id).catch(() => {});
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : '기록 저장에 실패했어요');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSubmit = async () => {
     if (!selectedEmotion) return;
     const places = getPlacesByEmotion(selectedEmotion).slice(0, 3);
     const analysis = generateMoodAnalysis(selectedEmotion, note);
     setRecommendedPlaces(places);
     setMoodAnalysis(analysis);
 
-    const record = {
-      id: Date.now().toString(),
-      emotion: selectedEmotion,
-      note: note || undefined,
-      stressScore: analysis.stressScore,
-      fatigueScore: analysis.fatigueScore,
-      recommendedPlaces: places,
-      createdAt: new Date().toISOString(),
-    };
-    addEmotionRecord(record);
+    await saveToCloud(selectedEmotion);
     setStep('result');
   };
 
@@ -53,6 +64,7 @@ export default function RecordClient() {
     setNote('');
     setRecommendedPlaces([]);
     setMoodAnalysis(null);
+    setSaveError(null);
   };
 
   const selectedConf = selectedEmotion ? EMOTION_MAP[selectedEmotion] : null;
@@ -73,7 +85,7 @@ export default function RecordClient() {
                 <br />
                 느끼고 있나요?
               </h2>
-              <p className="text-sm text-[#9CA3AF] mt-1.5">
+              <p className="text-sm text-[#6B7280] mt-1.5">
                 솔직하게 선택해보세요. AI가 맞는 장소를 추천해줄게요.
               </p>
             </div>
@@ -92,7 +104,7 @@ export default function RecordClient() {
                   <span className="text-3xl">{emotion.emoji}</span>
                   <div className="flex-1">
                     <p className="text-[16px] font-semibold text-[#1A1A1A]">{emotion.label}</p>
-                    <p className="text-xs text-[#9CA3AF] mt-0.5">{emotion.description}</p>
+                    <p className="text-xs text-[#6B7280] mt-0.5">{emotion.description}</p>
                   </div>
                   <ChevronRight size={18} className="text-[#C4BFB8]" />
                 </motion.button>
@@ -100,26 +112,26 @@ export default function RecordClient() {
             </div>
 
             {/* 과거 기록 */}
-            {emotionRecords.length > 0 && (
+            {recentPreviewLogs.length > 0 && (
               <div className="mt-8">
                 <h3 className="text-[15px] font-bold text-[#1A1A1A] mb-3">최근 감정 기록</h3>
                 <div className="space-y-2">
-                  {emotionRecords.slice(0, 3).map((record) => {
-                    const conf = EMOTION_MAP[record.emotion];
+                  {recentPreviewLogs.map((log) => {
+                    const conf = EMOTION_MAP[log.emotion];
                     return (
                       <div
-                        key={record.id}
+                        key={log.id}
                         className="flex items-center gap-3 bg-white rounded-xl p-3 border border-[#F0EDE8]"
                       >
                         <span className="text-xl">{conf?.emoji}</span>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-[#1A1A1A]">{conf?.label}</p>
-                          {record.note && (
-                            <p className="text-xs text-[#9CA3AF] truncate mt-0.5">{record.note}</p>
+                          {log.note && (
+                            <p className="text-xs text-[#6B7280] truncate mt-0.5">{log.note}</p>
                           )}
                         </div>
                         <span className="text-xs text-[#C4BFB8] flex-shrink-0">
-                          {new Date(record.createdAt).toLocaleDateString('ko-KR', {
+                          {new Date(log.created_at).toLocaleDateString('ko-KR', {
                             month: 'short',
                             day: 'numeric',
                           })}
@@ -181,10 +193,11 @@ export default function RecordClient() {
               </button>
               <button
                 onClick={handleSubmit}
-                className="flex-[2] py-3.5 rounded-2xl bg-[#5F8D4E] text-white font-semibold flex items-center justify-center gap-2 shadow-md shadow-[#5F8D4E]/20"
+                disabled={saving}
+                className="flex-[2] py-3.5 rounded-2xl bg-[#5F8D4E] text-white font-semibold flex items-center justify-center gap-2 shadow-md shadow-[#5F8D4E]/20 disabled:opacity-60"
               >
                 <Sparkles size={18} />
-                장소 추천받기
+                {saving ? '저장 중...' : '장소 추천받기'}
               </button>
             </div>
           </motion.div>
@@ -208,10 +221,23 @@ export default function RecordClient() {
                 <span style={{ color: selectedConf.color }}>{selectedConf.label}</span>
                 {' '}당신을 위한 추천
               </h2>
-              <p className="text-sm text-[#9CA3AF] mt-1">
+              <p className="text-sm text-[#6B7280] mt-1">
                 지금 상태에 딱 맞는 쉼터를 찾았어요
               </p>
             </div>
+
+            {saveError && (
+              <div className="flex items-center justify-between gap-3 bg-[#FDF0ED] border border-[#F3D9D2] rounded-2xl px-4 py-3 mb-5">
+                <p className="text-xs text-[#E07A5F] leading-relaxed">{saveError}</p>
+                <button
+                  onClick={() => selectedEmotion && saveToCloud(selectedEmotion)}
+                  disabled={saving}
+                  className="flex-shrink-0 text-xs font-semibold text-[#E07A5F] underline disabled:opacity-50"
+                >
+                  {saving ? '저장 중...' : '다시 시도'}
+                </button>
+              </div>
+            )}
 
             {/* AI 분석 결과 */}
             {moodAnalysis && (

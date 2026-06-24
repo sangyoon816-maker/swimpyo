@@ -43,8 +43,8 @@ export default function RestScoreModal({
           <DialogTitle className="text-[17px] font-bold text-[#1A1A1A]">
             {placeName}의 쉼 점수
           </DialogTitle>
-          <DialogDescription className="text-sm text-[#9CA3AF]">
-            6가지 기준으로 매긴 쉼표만의 점수예요
+          <DialogDescription className="text-sm text-[#6B7280]">
+            쉼표 에디터가 6가지 기준을 직접 평가해 종합한 점수예요
           </DialogDescription>
         </DialogHeader>
 
@@ -52,8 +52,12 @@ export default function RestScoreModal({
           <span className="text-[32px] font-bold text-[#5F8D4E] leading-none">
             {score.toFixed(1)}
           </span>
-          <span className="text-sm text-[#9CA3AF] mb-1">/ 10 쉼 점수</span>
+          <span className="text-sm text-[#6B7280] mb-1">/ 10 쉼 점수</span>
         </div>
+
+        <p className="text-xs text-[#6B7280] leading-relaxed -mt-1">
+          아래 항목은 각각 0~100점으로 평가되며, 점수가 높을수록 그 기준에서 머무르기 좋은 곳이에요.
+        </p>
 
         <div className="space-y-4 mt-2">
           {ITEMS.map((item, idx) => {

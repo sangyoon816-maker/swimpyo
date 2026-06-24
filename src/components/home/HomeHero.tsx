@@ -3,13 +3,19 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, Search, ChevronDown, Sparkles } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { MapPin, Search, ChevronDown, Sparkles, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { AREAS } from '@/data/places';
+import { useAppStore } from '@/store/useAppStore';
+import { cn } from '@/lib/utils';
 
 export default function HomeHero() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [areaMenuOpen, setAreaMenuOpen] = useState(false);
+  const selectedArea = useAppStore((s) => s.selectedArea);
+  const setSelectedArea = useAppStore((s) => s.setSelectedArea);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +34,7 @@ export default function HomeHero() {
           priority
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1A1A1A]/60 via-[#1A1A1A]/35 to-[#FAF9F6]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/55 to-[#FAF9F6]" />
       </div>
 
       <div className="flex items-center justify-between mb-10 relative">
@@ -40,14 +46,58 @@ export default function HomeHero() {
             쉼표<span className="text-[#A4BE7B]">,</span>
           </h1>
         </div>
-        <button
-          onClick={() => {}}
-          className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full px-3 py-2 shadow-sm"
-        >
-          <MapPin size={14} className="text-[#5F8D4E]" />
-          <span className="text-sm font-medium text-[#1A1A1A]">성수동</span>
-          <ChevronDown size={14} className="text-[#9CA3AF]" />
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setAreaMenuOpen((v) => !v)}
+            className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full px-3 py-2 shadow-sm"
+          >
+            <MapPin size={14} className="text-[#5F8D4E]" />
+            <span className="text-sm font-medium text-[#1A1A1A]">{selectedArea ?? '전체 지역'}</span>
+            <ChevronDown
+              size={14}
+              className={cn('text-[#6B7280] transition-transform', areaMenuOpen && 'rotate-180')}
+            />
+          </button>
+
+          <AnimatePresence>
+            {areaMenuOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setAreaMenuOpen(false)} />
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full mt-2 z-50 w-36 bg-white rounded-2xl shadow-lg border border-[#F0EDE8] py-1.5 max-h-64 overflow-y-auto"
+                >
+                  <button
+                    onClick={() => {
+                      setSelectedArea(null);
+                      setAreaMenuOpen(false);
+                    }}
+                    className="w-full flex items-center justify-between px-3.5 py-2 text-sm text-left text-[#1A1A1A] hover:bg-[#F5F3EF]"
+                  >
+                    전체 지역
+                    {selectedArea === null && <Check size={14} className="text-[#5F8D4E]" />}
+                  </button>
+                  {AREAS.map((area) => (
+                    <button
+                      key={area}
+                      onClick={() => {
+                        setSelectedArea(area);
+                        setAreaMenuOpen(false);
+                      }}
+                      className="w-full flex items-center justify-between px-3.5 py-2 text-sm text-left text-[#1A1A1A] hover:bg-[#F5F3EF]"
+                    >
+                      {area}
+                      {selectedArea === area && <Check size={14} className="text-[#5F8D4E]" />}
+                    </button>
+                  ))}
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       <motion.div
@@ -76,7 +126,7 @@ export default function HomeHero() {
         <div className="relative">
           <Search
             size={18}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B7280]"
           />
           <input
             type="text"

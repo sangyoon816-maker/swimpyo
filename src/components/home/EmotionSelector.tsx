@@ -36,7 +36,7 @@ export default function EmotionSelector() {
         <h2 className="text-[18px] font-bold text-[#1A1A1A]">
           지금 기분이 어때요?
         </h2>
-        <p className="text-sm text-[#9CA3AF] mt-0.5">
+        <p className="text-sm text-[#6B7280] mt-0.5">
           감정을 선택하면 쉼 진단으로 더 정확하게 추천해드려요
         </p>
       </div>
@@ -67,7 +67,7 @@ export default function EmotionSelector() {
               >
                 {emotion.label}
               </p>
-              <p className="text-xs text-[#9CA3AF] mt-0.5 leading-tight">
+              <p className="text-xs text-[#6B7280] mt-0.5 leading-tight">
                 {emotion.description}
               </p>
             </div>

@@ -23,7 +23,7 @@ export default function SectionTitle({
           {title}
         </h2>
         {subtitle && (
-          <p className="text-sm text-[#9CA3AF] mt-0.5">{subtitle}</p>
+          <p className="text-sm text-[#6B7280] mt-0.5">{subtitle}</p>
         )}
       </div>
       {moreHref && (

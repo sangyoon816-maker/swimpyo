@@ -44,7 +44,7 @@ export default function RestScore({
         {score.toFixed(1)}
       </span>
       {showLabel && (
-        <span className="text-[#9CA3AF] font-normal">쉼 점수</span>
+        <span className="text-[#6B7280] font-normal">쉼 점수</span>
       )}
       {onClick && <Info size={size === 'sm' ? 11 : 12} className="text-[#C4BFB8]" />}
     </>

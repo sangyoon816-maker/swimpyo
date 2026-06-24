@@ -68,7 +68,7 @@ export default function RestDiagnosisSheet({
               쉼 진단 · {config.label}
             </SheetTitle>
           </div>
-          <SheetDescription className="text-xs text-[#9CA3AF]">
+          <SheetDescription className="text-xs text-[#6B7280]">
             3개의 짧은 질문으로 더 정확하게 추천해드릴게요
           </SheetDescription>
         </SheetHeader>

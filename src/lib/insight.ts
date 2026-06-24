@@ -1,3 +1,4 @@
+import { SOLO_FRIENDLY_TAGS } from '@/data/tags';
 import type { Emotion, EmotionInsight, Place, RestScoreDetail } from '@/types';
 
 /**
@@ -41,7 +42,6 @@ const DIMENSION_LABELS: Record<keyof RestScoreDetail, string> = {
   satisfaction: '체류 만족도 높음',
 };
 
-const SOLO_FRIENDLY_TAGS = ['조용한', '독서', '혼자', '한적한'];
 const REASON_SCORE_THRESHOLD = 75;
 
 export function getRecommendReasonBullets(place: Place): string[] {

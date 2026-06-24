@@ -6,14 +6,14 @@ import { PLACES } from '@/data/places';
 
 export default function PopularSection() {
   const popular = [...PLACES]
-    .sort((a, b) => b.reviewCount - a.reviewCount)
+    .sort((a, b) => b.restScore - a.restScore)
     .slice(0, 6);
 
   return (
     <section className="py-6">
       <SectionTitle
-        title="요즘 핫한 쉼터"
-        subtitle="리뷰 많은 순"
+        title="쉼 점수 높은 쉼터"
+        subtitle="쉼표가 매긴 점수 기준"
         moreHref="/places"
         className="mb-4"
       />

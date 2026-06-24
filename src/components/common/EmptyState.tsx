@@ -29,7 +29,7 @@ export default function EmptyState({ emoji, title, desc, href, linkLabel }: Empt
         {emoji}
       </motion.div>
       <p className="text-[15px] font-semibold text-[#4B5563]">{title}</p>
-      <p className="text-sm text-[#9CA3AF] mt-1 mb-5 leading-relaxed whitespace-pre-line">
+      <p className="text-sm text-[#6B7280] mt-1 mb-5 leading-relaxed whitespace-pre-line">
         {desc}
       </p>
       {href && linkLabel && (

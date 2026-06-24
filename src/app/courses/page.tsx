@@ -1,10 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Navigation, Clock, Star } from 'lucide-react';
+import type { Metadata } from 'next';
 import PageHeader from '@/components/layout/PageHeader';
 import { COURSES } from '@/data/courses';
 import { formatDuration, DIFFICULTY_LABELS } from '@/lib/utils';
 import RestScore from '@/components/common/RestScore';
+
+export const metadata: Metadata = { title: '산책 코스' };
 
 export default function CoursesPage() {
   return (

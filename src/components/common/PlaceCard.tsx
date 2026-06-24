@@ -4,11 +4,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { cn, formatDistance } from '@/lib/utils';
 import { CATEGORY_LABELS, CATEGORY_EMOJIS } from '@/lib/utils';
+import { estimateWalkMinutes } from '@/lib/geo';
 import RestScore from './RestScore';
 import HeartButton from './HeartButton';
 import { useAppStore } from '@/store/useAppStore';
+import { useFavoriteToggle } from '@/hooks/useFavoriteToggle';
 import type { Emotion, Place } from '@/types';
 
 interface PlaceCardProps {
@@ -24,15 +26,15 @@ export default function PlaceCard({
   className,
   contextEmotion,
 }: PlaceCardProps) {
-  const { isSaved, savePlace, unsavePlace } = useAppStore();
+  const { isSaved } = useAppStore();
+  const { toggleFavorite } = useFavoriteToggle();
   const saved = isSaved(place.id);
   const href = contextEmotion ? `/places/${place.id}?emotion=${contextEmotion}` : `/places/${place.id}`;
 
   const handleSave = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (saved) unsavePlace(place.id);
-    else savePlace(place.id);
+    toggleFavorite(place.id);
   };
 
   if (variant === 'horizontal') {
@@ -60,15 +62,21 @@ export default function PlaceCard({
                 <span className="text-xs text-[#5F8D4E] font-medium">
                   {CATEGORY_EMOJIS[place.category]} {CATEGORY_LABELS[place.category]}
                 </span>
-                <h3 className="text-[15px] font-semibold text-[#1A1A1A] mt-0.5 leading-tight">
+                <h2 className="text-[15px] font-semibold text-[#1A1A1A] mt-0.5 leading-tight">
                   {place.name}
-                </h3>
+                </h2>
               </div>
               <HeartButton saved={saved} onClick={handleSave} size={18} className="p-1 flex-shrink-0" />
             </div>
             <div className="flex items-center gap-1.5 mt-1.5">
-              <MapPin size={12} className="text-[#9CA3AF]" />
-              <span className="text-xs text-[#9CA3AF]">{place.neighborhood}</span>
+              <MapPin size={12} className="text-[#6B7280]" />
+              {place.distance !== undefined ? (
+                <span className="text-xs text-[#6B7280]">
+                  {formatDistance(place.distance)} · 🚶 도보 {estimateWalkMinutes(place.distance)}분
+                </span>
+              ) : (
+                <span className="text-xs text-[#6B7280]">{place.neighborhood}</span>
+              )}
             </div>
             <div className="flex items-center gap-2 mt-2">
               <RestScore score={place.restScore} size="sm" />
@@ -123,9 +131,9 @@ export default function PlaceCard({
             <span className="text-[10px] text-[#5F8D4E] font-medium">
               {CATEGORY_EMOJIS[place.category]} {CATEGORY_LABELS[place.category]}
             </span>
-            <h3 className="text-[13px] font-semibold text-[#1A1A1A] mt-0.5 leading-tight line-clamp-2">
+            <h2 className="text-[13px] font-semibold text-[#1A1A1A] mt-0.5 leading-tight line-clamp-2">
               {place.name}
-            </h3>
+            </h2>
             <RestScore score={place.restScore} size="sm" showLabel={false} className="mt-1.5" />
           </div>
         </motion.div>
@@ -170,15 +178,15 @@ export default function PlaceCard({
               <span className="text-xs text-[#5F8D4E] font-medium">
                 {CATEGORY_EMOJIS[place.category]} {CATEGORY_LABELS[place.category]}
               </span>
-              <h3 className="text-[17px] font-semibold text-[#1A1A1A] mt-0.5">
+              <h2 className="text-[17px] font-semibold text-[#1A1A1A] mt-0.5">
                 {place.name}
-              </h3>
+              </h2>
             </div>
             <RestScore score={place.restScore} size="sm" />
           </div>
           <div className="flex items-center gap-1 mt-2">
-            <MapPin size={13} className="text-[#9CA3AF]" />
-            <span className="text-xs text-[#9CA3AF]">
+            <MapPin size={13} className="text-[#6B7280]" />
+            <span className="text-xs text-[#6B7280]">
               {place.neighborhood} · {place.district}
             </span>
           </div>

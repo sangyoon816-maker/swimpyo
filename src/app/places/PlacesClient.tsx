@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PlaceCard from '@/components/common/PlaceCard';
 import EmotionChip from '@/components/common/EmotionChip';
@@ -22,7 +22,6 @@ export default function PlacesClient({ initialEmotion, initialQuery }: PlacesCli
     (initialEmotion as Emotion) ?? null
   );
   const [selectedCategory, setSelectedCategory] = useState<PlaceCategory | null>(null);
-  const [sortBy, setSortBy] = useState<'score' | 'review' | 'distance'>('score');
 
   const filtered = useMemo(() => {
     let list = [...PLACES];
@@ -45,18 +44,17 @@ export default function PlacesClient({ initialEmotion, initialQuery }: PlacesCli
       list = list.filter((p) => p.category === selectedCategory);
     }
 
-    if (sortBy === 'score') list.sort((a, b) => b.restScore - a.restScore);
-    else if (sortBy === 'review') list.sort((a, b) => b.reviewCount - a.reviewCount);
+    list.sort((a, b) => b.restScore - a.restScore);
 
     return list;
-  }, [query, selectedEmotion, selectedCategory, sortBy]);
+  }, [query, selectedEmotion, selectedCategory]);
 
   return (
     <div>
       {/* 검색창 */}
       <div className="px-4 py-3 sticky top-14 bg-[#FAF9F6]/95 backdrop-blur-md z-30 border-b border-[#E8E4DD]/50">
         <div className="relative">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6B7280]" />
           <input
             type="text"
             value={query}
@@ -101,26 +99,14 @@ export default function PlacesClient({ initialEmotion, initialQuery }: PlacesCli
         className="pb-3"
       />
 
-      {/* 정렬 + 결과 수 */}
+      {/* 결과 수 */}
       <div className="flex items-center justify-between px-4 pb-3">
         <span className="text-sm text-[#6B7280]">
           <span className="font-semibold text-[#1A1A1A]">{filtered.length}</span>개의 장소
         </span>
-        <div className="flex items-center gap-2">
-          {(['score', 'review'] as const).map((s) => (
-            <button
-              key={s}
-              onClick={() => setSortBy(s)}
-              className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
-                sortBy === s
-                  ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
-                  : 'bg-white text-[#6B7280] border-[#E8E4DD]'
-              }`}
-            >
-              {s === 'score' ? '쉼 점수순' : '리뷰 많은순'}
-            </button>
-          ))}
-        </div>
+        <span className="text-xs px-3 py-1.5 rounded-full bg-[#1A1A1A] text-white">
+          쉼 점수순
+        </span>
       </div>
 
       {/* 장소 목록 */}

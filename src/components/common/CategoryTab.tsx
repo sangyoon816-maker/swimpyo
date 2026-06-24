@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { CATEGORY_LABELS, CATEGORY_EMOJIS } from '@/lib/utils';
 import type { PlaceCategory } from '@/types';

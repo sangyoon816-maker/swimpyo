@@ -1,3 +1,5 @@
+import type { PlaceTag } from '@/data/tags';
+
 export type Emotion =
   | 'tired'
   | 'stressed'
@@ -52,29 +54,16 @@ export interface Place {
   distance?: number;
   restScore: number;
   restScoreDetail: RestScoreDetail;
+  estimatedStayMinutes: number;
   recommendActivities: RecommendActivity[];
   images: string[];
   thumbnail: string;
-  tags: string[];
+  tags: PlaceTag[];
   description: string;
   recommendReason: string;
   openHours?: string;
   isFree: boolean;
-  reviewCount: number;
-  reviews: Review[];
   emotions: Emotion[];
-  createdAt: string;
-}
-
-export interface Review {
-  id: string;
-  userId: string;
-  userName: string;
-  userAvatar?: string;
-  rating: number;
-  content: string;
-  emotion: Emotion;
-  visitedAt: string;
   createdAt: string;
 }
 
@@ -110,6 +99,63 @@ export interface EmotionRecord {
   createdAt: string;
 }
 
+export interface EmotionLog {
+  id: string;
+  user_id: string;
+  emotion: Emotion;
+  note: string | null;
+  created_at: string;
+}
+
+export interface Favorite {
+  id: string;
+  user_id: string;
+  place_id: string;
+  created_at: string;
+}
+
+export interface VisitedPlace {
+  id: string;
+  user_id: string;
+  place_id: string;
+  visited_at: string;
+}
+
+export interface RecommendationFeedback {
+  id: string;
+  user_id: string;
+  place_id: string;
+  liked: boolean;
+  created_at: string;
+}
+
+export interface PlaceReview {
+  id: string;
+  user_id: string;
+  place_id: string;
+  content: string;
+  liked: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CourseProgress {
+  id: string;
+  user_id: string;
+  course_id: string;
+  current_stop: number;
+  started_at: string;
+  completed_at: string | null;
+  updated_at: string;
+}
+
+export interface UserBadge {
+  id: string;
+  user_id: string;
+  badge_id: string;
+  earned_at: string;
+}
+
 export interface EmotionInsight {
   title: string;
   description: string;
@@ -143,6 +189,8 @@ export interface VisitRecord {
 export interface FilterOptions {
   category?: PlaceCategory;
   emotion?: Emotion;
+  district?: string;
+  tags?: PlaceTag[];
   maxDistance?: number;
   isFree?: boolean;
   minRestScore?: number;

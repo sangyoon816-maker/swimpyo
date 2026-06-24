@@ -20,7 +20,7 @@ export default function HeartButton({
   className,
 }: HeartButtonProps) {
   return (
-    <button onClick={onClick} className={className}>
+    <button onClick={onClick} aria-label={saved ? '찜 해제하기' : '찜하기'} className={className}>
       <motion.span
         key={saved ? 'saved' : 'unsaved'}
         initial={{ scale: 0.5 }}

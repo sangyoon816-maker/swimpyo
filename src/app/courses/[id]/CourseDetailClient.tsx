@@ -3,9 +3,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Navigation, Clock, MapPin, ChevronRight } from 'lucide-react';
+import { ChevronLeft, Navigation, Clock, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { CATEGORY_EMOJIS, CATEGORY_LABELS, formatDuration, DIFFICULTY_LABELS } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
+import { useCourseProgress } from '@/hooks/useCourseProgress';
 import RestScore from '@/components/common/RestScore';
 import EmotionChip from '@/components/common/EmotionChip';
 import type { Course } from '@/types';
@@ -16,6 +18,8 @@ interface CourseDetailClientProps {
 
 export default function CourseDetailClient({ course }: CourseDetailClientProps) {
   const router = useRouter();
+  const { user } = useAuth();
+  const { progress } = useCourseProgress(user?.id, course);
 
   return (
     <div className="min-h-screen bg-[#FAF9F6]">
@@ -33,6 +37,7 @@ export default function CourseDetailClient({ course }: CourseDetailClientProps) 
 
         <button
           onClick={() => router.back()}
+          aria-label="뒤로 가기"
           className="absolute top-4 left-4 w-9 h-9 bg-white/85 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm"
         >
           <ChevronLeft size={20} />
@@ -122,11 +127,11 @@ export default function CourseDetailClient({ course }: CourseDetailClientProps) 
                             {stop.place.name}
                           </h3>
                           {stop.memo && (
-                            <p className="text-xs text-[#9CA3AF] mt-0.5">{stop.memo}</p>
+                            <p className="text-xs text-[#6B7280] mt-0.5">{stop.memo}</p>
                           )}
                           <div className="flex items-center gap-2 mt-1.5">
-                            <Clock size={11} className="text-[#9CA3AF]" />
-                            <span className="text-xs text-[#9CA3AF]">
+                            <Clock size={11} className="text-[#6B7280]" />
+                            <span className="text-xs text-[#6B7280]">
                               약 {stop.stayDuration}분
                             </span>
                             <RestScore score={stop.place.restScore} size="sm" showLabel={false} />
@@ -160,10 +165,13 @@ export default function CourseDetailClient({ course }: CourseDetailClientProps) 
 
       {/* 하단 CTA */}
       <div className="sticky bottom-20 bg-white/95 backdrop-blur-md border-t border-[#E8E4DD] px-4 py-3">
-        <button className="w-full bg-[#5F8D4E] text-white py-3.5 rounded-2xl font-semibold text-[15px] flex items-center justify-center gap-2 shadow-md shadow-[#5F8D4E]/20">
+        <Link
+          href={`/courses/${course.id}/progress`}
+          className="w-full bg-[#5F8D4E] text-white py-3.5 rounded-2xl font-semibold text-[15px] flex items-center justify-center gap-2 shadow-md shadow-[#5F8D4E]/20"
+        >
           <Navigation size={18} />
-          코스 시작하기
-        </button>
+          {progress ? '이어서 진행하기' : '코스 시작하기'}
+        </Link>
       </div>
     </div>
   );

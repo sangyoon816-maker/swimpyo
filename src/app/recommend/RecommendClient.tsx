@@ -17,6 +17,7 @@ import { recommendFromDiagnosis } from '@/lib/diagnosis';
 import { getEmotionInsight, getRecommendReasonBullets } from '@/lib/insight';
 import { CATEGORY_LABELS, CATEGORY_EMOJIS, getObjectParticle } from '@/lib/utils';
 import { useAppStore } from '@/store/useAppStore';
+import { useFavoriteToggle } from '@/hooks/useFavoriteToggle';
 import type { DiagnosisAnswers, Emotion, Place } from '@/types';
 
 interface RecommendClientProps {
@@ -26,7 +27,8 @@ interface RecommendClientProps {
 
 export default function RecommendClient({ emotion, answers }: RecommendClientProps) {
   const [scoreModalPlace, setScoreModalPlace] = useState<Place | null>(null);
-  const { isSaved, savePlace, unsavePlace } = useAppStore();
+  const { isSaved } = useAppStore();
+  const { toggleFavorite } = useFavoriteToggle();
   const config = EMOTION_MAP[emotion];
   const insight = getEmotionInsight(emotion);
 
@@ -112,7 +114,7 @@ export default function RecommendClient({ emotion, answers }: RecommendClientPro
                 />
                 <HeartButton
                   saved={isSaved(top.id)}
-                  onClick={() => (isSaved(top.id) ? unsavePlace(top.id) : savePlace(top.id))}
+                  onClick={() => toggleFavorite(top.id)}
                   size={15}
                   unsavedClassName="text-[#6B7280]"
                   className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center"
@@ -176,7 +178,7 @@ export default function RecommendClient({ emotion, answers }: RecommendClientPro
                               }}
                             />
                           </div>
-                          <p className="text-xs text-[#9CA3AF] mt-0.5">{place.neighborhood}</p>
+                          <p className="text-xs text-[#6B7280] mt-0.5">{place.neighborhood}</p>
                           <p className="text-xs text-[#5F8D4E] font-medium mt-1.5 leading-snug line-clamp-1">
                             {getRecommendReasonBullets(place).slice(0, 2).join(' · ')}
                           </p>

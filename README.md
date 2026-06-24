@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 쉼표 (Shimtae)
 
-## Getting Started
+감정 기반 동네 힐링 장소 추천 플랫폼. 지금 내 상태에 맞는 쉼 공간(공원·카페·산책길·전망 명소)을 추천하고, 방문·후기·코스 완주·배지/레벨로 활동을 누적합니다.
 
-First, run the development server:
+Next.js 16 (App Router, Turbopack) + Supabase + Kakao Map.
+
+## 시작하기
 
 ```bash
+npm install
+cp .env.example .env.local   # 값 채우기 — 아래 "환경 변수" 참고
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+http://localhost:3000 에서 확인합니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 환경 변수
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`.env.example` 참고. 필수:
 
-## Learn More
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase 프로젝트 API 키
+- `NEXT_PUBLIC_KAKAO_MAP_KEY` — `/map` 페이지 지도 표시에 필요 (Kakao Developers 앱 키)
 
-To learn more about Next.js, take a look at the following resources:
+선택:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `NEXT_PUBLIC_SITE_URL` — 커스텀 도메인 사용 시에만 설정 (OG 이미지 · sitemap · robots.txt에 사용, 비워두면 Vercel 배포 URL로 자동 대체)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Supabase 마이그레이션
 
-## Deploy on Vercel
+`supabase/*.sql` 파일을 Supabase Dashboard > SQL Editor에서 순서대로 실행합니다. 각 파일은 테이블 생성 + RLS 정책을 함께 포함합니다.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 배포
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+배포 전 점검 항목은 [DEPLOYMENT.md](./DEPLOYMENT.md) 참고.
+
+```bash
+npm run build
+npm run lint
+```

@@ -34,6 +34,7 @@ export default function PageHeader({
       {showBack && (
         <button
           onClick={() => router.back()}
+          aria-label="뒤로 가기"
           className={cn(
             'flex items-center justify-center w-8 h-8 rounded-full transition-colors',
             transparent

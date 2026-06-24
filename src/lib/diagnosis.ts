@@ -1,4 +1,5 @@
 import { getPlacesByEmotion } from '@/data/places';
+import { SOLO_FRIENDLY_TAGS, type PlaceTag } from '@/data/tags';
 import type { DiagnosisAnswers, Emotion, Place, PlaceCategory } from '@/types';
 
 export interface DiagnosisOption {
@@ -43,11 +44,10 @@ export const DIAGNOSIS_QUESTIONS: DiagnosisQuestion[] = [
   },
 ];
 
-const INDOOR_CATEGORIES: PlaceCategory[] = ['cafe', 'library', 'culture'];
-const OUTDOOR_CATEGORIES: PlaceCategory[] = ['park', 'trail', 'viewpoint'];
+export const INDOOR_CATEGORIES: PlaceCategory[] = ['cafe', 'library', 'culture'];
+export const OUTDOOR_CATEGORIES: PlaceCategory[] = ['park', 'trail', 'viewpoint'];
 const LONG_WALK_CATEGORIES: PlaceCategory[] = ['park', 'trail'];
-const ALONE_TAGS = ['조용한', '독서', '혼자', '한적한'];
-const WITH_TAGS = ['피크닉', '한강뷰', '분수쇼', '반려동물'];
+const WITH_TAGS: PlaceTag[] = ['피크닉', '한강뷰', '분수쇼', '반려동물'];
 
 /** Simple conditional scoring — no AI involved, easy to swap for a real model later. */
 export function recommendFromDiagnosis(
@@ -67,7 +67,7 @@ export function recommendFromDiagnosis(
     if (answers.walk === 'long' && LONG_WALK_CATEGORIES.includes(place.category)) score += 2;
     if (answers.walk === 'short' && !LONG_WALK_CATEGORIES.includes(place.category)) score += 2;
 
-    if (answers.social === 'alone' && place.tags.some((t) => ALONE_TAGS.includes(t))) score += 2;
+    if (answers.social === 'alone' && place.tags.some((t) => SOLO_FRIENDLY_TAGS.includes(t))) score += 2;
     if (answers.social === 'with' && place.tags.some((t) => WITH_TAGS.includes(t))) score += 2;
 
     return { place, score };
